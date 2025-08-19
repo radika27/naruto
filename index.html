@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Anggaran Harian - Tema Naruto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffcc02 100%);
+            min-height: 100vh;
+        }
+        
+        .ninja-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 3px solid #ff6b35;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .jutsu-button {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        .jutsu-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+        }
+        
+        .expense-item {
+            background: linear-gradient(90deg, #fff 0%, #fff8f0 100%);
+            border-left: 4px solid #ff6b35;
+            transition: all 0.3s ease;
+        }
+        
+        .expense-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .total-display {
+            background: linear-gradient(135deg, #1a365d 0%, #2d5a87 100%);
+            color: white;
+            border: 3px solid #ff6b35;
+        }
+        
+        .input-field {
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+        
+        .naruto-emoji {
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        .delete-btn {
+            background: linear-gradient(45deg, #e53e3e, #c53030);
+            transition: all 0.3s ease;
+        }
+        
+        .delete-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3);
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="naruto-emoji mb-4">🍥</div>
+            <h1 class="text-4xl font-bold text-white mb-2 drop-shadow-lg">Kalkulator Anggaran Ninja</h1>
+            <p class="text-white text-lg drop-shadow">Kelola keuangan seperti Hokage sejati! 🥷</p>
+        </div>
+
+        <!-- Income Section -->
+        <div class="ninja-card rounded-2xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="mr-3">💎</span>
+                Pemasukan Harian
+            </h2>
+            
+            <div class="grid md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Gaji Harian (Rp)</label>
+                    <input type="number" id="dailySalary" placeholder="500000" 
+                           class="input-field w-full px-4 py-3 rounded-lg focus:outline-none" onchange="updateIncome()">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Dana Tambahan (Rp)</label>
+                    <input type="number" id="additionalIncome" placeholder="100000" 
+                           class="input-field w-full px-4 py-3 rounded-lg focus:outline-none" onchange="updateIncome()">
+                </div>
+                
+                <div class="flex items-end">
+                    <div class="total-display rounded-xl p-4 w-full text-center">
+                        <h4 class="text-sm font-semibold mb-1">Total Pemasukan</h4>
+                        <div class="text-xl font-bold" id="totalIncome">Rp 0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Input Section -->
+            <div class="ninja-card rounded-2xl p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="mr-3">💰</span>
+                    Tambah Pengeluaran
+                </h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Pengeluaran</label>
+                        <input type="text" id="expenseName" placeholder="Contoh: Ramen Ichiraku" 
+                               class="input-field w-full px-4 py-3 rounded-lg focus:outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah (Rp)</label>
+                        <input type="number" id="expenseAmount" placeholder="25000" 
+                               class="input-field w-full px-4 py-3 rounded-lg focus:outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Kategori</label>
+                        <select id="expenseCategory" class="input-field w-full px-4 py-3 rounded-lg focus:outline-none">
+                            <option value="🍜">🍜 Makanan</option>
+                            <option value="🚌">🚌 Transportasi</option>
+                            <option value="🎮">🎮 Hiburan</option>
+                            <option value="📚">📚 Pendidikan</option>
+                            <option value="👕">👕 Pakaian</option>
+                            <option value="💊">💊 Kesehatan</option>
+                            <option value="📱">📱 Teknologi</option>
+                            <option value="🏠">🏠 Rumah Tangga</option>
+                            <option value="💸">💸 Lainnya</option>
+                        </select>
+                    </div>
+                    
+                    <button onclick="addExpense()" class="jutsu-button w-full py-3 px-6 rounded-lg text-white font-bold text-lg">
+                        ⚡ Jutsu Tambah Pengeluaran!
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary Section -->
+            <div class="ninja-card rounded-2xl p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="mr-3">📊</span>
+                    Ringkasan Anggaran
+                </h2>
+                
+                <div class="total-display rounded-xl p-6 mb-6 text-center">
+                    <h3 class="text-lg font-semibold mb-2">Total Pengeluaran Hari Ini</h3>
+                    <div class="text-3xl font-bold" id="totalAmount">Rp 0</div>
+                </div>
+                
+                <div class="rounded-xl p-6 mb-6 text-center" id="balanceDisplay" style="background: linear-gradient(135deg, #38a169 0%, #2f855a 100%); color: white; border: 3px solid #ff6b35;">
+                    <h3 class="text-lg font-semibold mb-2">💰 Saldo Tersisa</h3>
+                    <div class="text-3xl font-bold" id="remainingBalance">Rp 0</div>
+                    <p class="text-sm mt-2 opacity-90" id="balanceStatus">Masukkan pemasukan untuk melihat saldo</p>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                        <span class="font-semibold text-blue-800">📝 Total Item:</span>
+                        <span class="font-bold text-blue-600" id="totalItems">0</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                        <span class="font-semibold text-green-800">💵 Rata-rata per Item:</span>
+                        <span class="font-bold text-green-600" id="averageAmount">Rp 0</span>
+                    </div>
+                </div>
+                
+                <button onclick="clearAll()" class="delete-btn w-full py-3 px-6 rounded-lg text-white font-bold mt-6">
+                    🗑️ Reset Semua Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Expenses List -->
+        <div class="ninja-card rounded-2xl p-6 mt-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="mr-3">📋</span>
+                Daftar Pengeluaran Hari Ini
+            </h2>
+            
+            <div id="expensesList" class="space-y-3">
+                <div class="text-center text-gray-500 py-8">
+                    <div class="text-4xl mb-4">🍃</div>
+                    <p class="text-lg">Belum ada pengeluaran hari ini.<br>Mulai tambahkan pengeluaran pertama Anda!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let expenses = [];
+        let expenseId = 0;
+        let dailyIncome = 0;
+
+        function updateIncome() {
+            const salary = parseFloat(document.getElementById('dailySalary').value) || 0;
+            const additional = parseFloat(document.getElementById('additionalIncome').value) || 0;
+            
+            dailyIncome = salary + additional;
+            
+            document.getElementById('totalIncome').textContent = `Rp ${dailyIncome.toLocaleString('id-ID')}`;
+            updateBalance();
+        }
+
+        function updateBalance() {
+            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const balance = dailyIncome - totalExpenses;
+            const balanceElement = document.getElementById('remainingBalance');
+            const statusElement = document.getElementById('balanceStatus');
+            const balanceDisplay = document.getElementById('balanceDisplay');
+            
+            balanceElement.textContent = `Rp ${balance.toLocaleString('id-ID')}`;
+            
+            if (dailyIncome === 0) {
+                statusElement.textContent = 'Masukkan pemasukan untuk melihat saldo';
+                balanceDisplay.style.background = 'linear-gradient(135deg, #718096 0%, #4a5568 100%)';
+            } else if (balance >= 0) {
+                statusElement.textContent = balance > dailyIncome * 0.2 ? '✅ Keuangan sehat, dattebayo!' : '⚠️ Hati-hati, saldo mulai menipis!';
+                balanceDisplay.style.background = balance > dailyIncome * 0.2 ? 'linear-gradient(135deg, #38a169 0%, #2f855a 100%)' : 'linear-gradient(135deg, #ed8936 0%, #dd6b20 100%)';
+            } else {
+                statusElement.textContent = '🚨 Pengeluaran melebihi pemasukan!';
+                balanceDisplay.style.background = 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)';
+            }
+        }
+
+        function addExpense() {
+            const name = document.getElementById('expenseName').value.trim();
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const category = document.getElementById('expenseCategory').value;
+
+            if (!name || !amount || amount <= 0) {
+                alert('🚫 Isi nama dan jumlah pengeluaran dengan benar, dattebayo!');
+                return;
+            }
+
+            const expense = {
+                id: expenseId++,
+                name: name,
+                amount: amount,
+                category: category,
+                time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+            };
+
+            expenses.push(expense);
+            updateDisplay();
+            updateBalance();
+            clearInputs();
+        }
+
+        function deleteExpense(id) {
+            expenses = expenses.filter(expense => expense.id !== id);
+            updateDisplay();
+            updateBalance();
+        }
+
+        function updateDisplay() {
+            const expensesList = document.getElementById('expensesList');
+            const totalAmount = document.getElementById('totalAmount');
+            const totalItems = document.getElementById('totalItems');
+            const averageAmount = document.getElementById('averageAmount');
+
+            if (expenses.length === 0) {
+                expensesList.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <div class="text-4xl mb-4">🍃</div>
+                        <p class="text-lg">Belum ada pengeluaran hari ini.<br>Mulai tambahkan pengeluaran pertama Anda!</p>
+                    </div>
+                `;
+            } else {
+                expensesList.innerHTML = expenses.map(expense => `
+                    <div class="expense-item p-4 rounded-lg flex justify-between items-center">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">${expense.category}</span>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">${expense.name}</h4>
+                                <p class="text-sm text-gray-500">⏰ ${expense.time}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="font-bold text-lg text-orange-600">Rp ${expense.amount.toLocaleString('id-ID')}</span>
+                            <button onclick="deleteExpense(${expense.id})" 
+                                    class="delete-btn px-3 py-2 rounded-lg text-white font-semibold text-sm">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const average = expenses.length > 0 ? total / expenses.length : 0;
+
+            totalAmount.textContent = `Rp ${total.toLocaleString('id-ID')}`;
+            totalItems.textContent = expenses.length;
+            averageAmount.textContent = `Rp ${Math.round(average).toLocaleString('id-ID')}`;
+        }
+
+        function clearInputs() {
+            document.getElementById('expenseName').value = '';
+            document.getElementById('expenseAmount').value = '';
+            document.getElementById('expenseCategory').selectedIndex = 0;
+        }
+
+        function clearAll() {
+            if (expenses.length === 0 && dailyIncome === 0) {
+                alert('📝 Tidak ada data untuk dihapus!');
+                return;
+            }
+            
+            if (confirm('🤔 Yakin ingin menghapus semua data (pemasukan & pengeluaran)?')) {
+                expenses = [];
+                expenseId = 0;
+                dailyIncome = 0;
+                document.getElementById('dailySalary').value = '';
+                document.getElementById('additionalIncome').value = '';
+                document.getElementById('totalIncome').textContent = 'Rp 0';
+                updateDisplay();
+                updateBalance();
+                alert('✅ Semua data berhasil dihapus, dattebayo!');
+            }
+        }
+
+        // Allow Enter key to add expense
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addExpense();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9718321232fbe78f',t:'MTc1NTU5MTI0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
